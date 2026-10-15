@@ -1,41 +1,28 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { animate, stagger } from 'animejs';
-import {
-  ArrowRight,
-  BookOpen,
-  ChevronDown,
-  Heart,
-  Play,
-  Utensils,
-} from 'lucide-react';
+import { ArrowRight, BookOpen, ChevronDown, Heart } from 'lucide-react';
 import MorphSlider from '../reactbits/MorphSlider';
 import DriftWall from '../reactbits/DriftWall';
 import FlexCarousel from '../reactbits/FlexCarousel';
-import TiltedCard from '../reactbits/TiltedCard';
-import SpotlightCard from '../reactbits/SpotlightCard';
-import DecryptedText from '../reactbits/DecryptedText';
 import VideoPlayerModal from '../interactive/VideoPlayerModal';
 import DynamicNotch from '../common/DynamicNotch';
 import SideNotchMusic from '../common/SideNotchMusic';
 import ReasonScene from './ReasonScene';
 import NotesScene from './NotesScene';
 import BirthdayCountdown from './BirthdayCountdown';
-import { morphSliderItems, driftWallItems, carouselItems } from '../../data/media';
-import { loveNotes } from '../../data/messages';
+import { morphSliderItems } from '../../data/media';
 import { playPop, playChime } from '../../utils/sound';
 import {
   Curtain,
   hasPlayedCurtain,
   ProgressBar,
   SideNav,
-  Marquee,
   Magnetic,
   Line,
   Mask,
   useScene,
   useReveal,
   useMediaQuery,
-  clamp,
   mix,
   seg,
   easeOut,
@@ -47,6 +34,7 @@ import {
 import heroAnesk from '../../assets/images/anesk.jpeg';
 import heroSekolah from '../../assets/images/sekolah.png';
 import hero2 from '../../assets/images/2.png';
+import closingPhoto from '../../assets/images/3.png'; // foto penutup, ganti file kalau mau foto lain
 
 /*
   Palet putih tulang (bone white):
@@ -58,9 +46,6 @@ import hero2 from '../../assets/images/2.png';
   #e3d8c6  border
   #d9cdb8  titik nonaktif
 */
-
-// Mask bawaan DriftWall itu gradient, dimatikan biar wall full sampai ujung.
-const NO_MASK = { WebkitMaskImage: 'none', maskImage: 'none' };
 
 /* ------------------------------------------------------------------ */
 /* Scene 1: Hero                                                        */
@@ -245,7 +230,7 @@ function HeroScene({ ready, onExploreFavorites }) {
           </div>
         </div>
 
-        {/* Hiasan kanan: badge teks muter (semua layar) + tumpukan polaroid (layar lebar) */}
+        {/* Hiasan kanan: tumpukan polaroid (layar lebar) */}
         <div
           data-aside
           className="pointer-events-none absolute right-5 top-24 z-10 md:right-10 xl:right-16 xl:top-1/2 xl:-translate-y-1/2"
@@ -269,20 +254,6 @@ function HeroScene({ ready, onExploreFavorites }) {
                 </div>
               </div>
             ))}
-
-            <div
-              data-float
-              className="relative ml-auto h-24 w-24 xl:absolute xl:-left-12 xl:bottom-10 xl:ml-0 xl:h-28 xl:w-28"
-            >
-              <svg viewBox="0 0 120 120" className="h-full w-full" aria-hidden="true">
-                <defs>
-                  <path
-                    id="heroBadgeCircle"
-                    d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"
-                  />
-                </defs>
-              </svg>
-            </div>
           </div>
         </div>
 
@@ -485,14 +456,6 @@ function MomentsScene() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   useReveal(ref);
 
-  const handleSelectMedia = (index, item) => {
-    playPop();
-    if (item && item.videoUrl) {
-      setSelectedVideo(item);
-      setIsModalOpen(true);
-    }
-  };
-
   return (
     <section
       id="moments"
@@ -508,12 +471,12 @@ function MomentsScene() {
             Hi Lily lover.
           </h2>
           <p data-r className="text-sm font-medium leading-relaxed text-[#7a2039] md:text-base">
-            Look ur bouquet there and open the letter at the bouquet, i love u 
+            Look ur bouquet there and open the letter at the bouquet, i love u
           </p>
         </div>
       </div>
 
-      {/* Bucket bunga — semua layar (HP & Desktop) */}
+      {/* Bucket bunga: semua layar (HP & Desktop) */}
       <div
         data-r
         className="relative w-full overflow-hidden bg-[#efe8dc]"
@@ -532,17 +495,10 @@ function MomentsScene() {
 }
 
 /* ------------------------------------------------------------------ */
-/* Scene 6: Surat (kartu bertumpuk)                                     */
-/* ------------------------------------------------------------------ */
-
-
-
-/* ------------------------------------------------------------------ */
 /* Scene 7: Penutup (foto terbuka dari lingkaran)                       */
 /* ------------------------------------------------------------------ */
 
-// GANTI dengan nama file aslimu (file ada di public/images/)
-const CLOSING_PHOTO = '/images/foto3.png';
+const CLOSING_PHOTO = closingPhoto;
 
 function ClosingScene({ onExploreFavorites }) {
   const sceneRef = useRef(null);
@@ -691,7 +647,6 @@ export default function StorySection({ onExploreFavorites }) {
 
       <HeroScene ready={ready} onExploreFavorites={onExploreFavorites} />
       <GalleryScene />
-      {/* <Marquee words={['senyummu', 'tawamu', 'kita', 'selamanya']} /> */}
       <ReasonScene />
       <MomentsScene />
       <NotesScene onGoToAllFavorites={onExploreFavorites} />
