@@ -1,28 +1,34 @@
-// ===== DAFTAR FILE MANUAL =====
-// Tulis path-nya satu per satu. Urutan di sini = urutan tampil.
-// Path mulai dari "/" karena file ada di folder public/
-// GANTI nama file di bawah dengan nama file aslimu (huruf besar-kecil & ekstensi harus persis).
-const IMAGE_PATHS = [
-  'src/assets/images/SECTIONAWAL.jpg',
-  'src/assets/images/aneskabayi.jpeg',
-  'src/assets/images/bunga.png',
-  'src/assets/images/3.png',
-  'src/assets/images/4.png  ',
-  '/images/foto6.jpg',
-  
+// ===== GAMBAR DARI src/assets/images (di-import, jadi aman di Vercel) =====
+// Nama file harus persis sama, termasuk huruf besar-kecil dan ekstensi.
+import sectionAwal from '../assets/images/SECTIONAWAL.jpg';
+import aneskabayi from '../assets/images/aneskabayi.jpeg';
+import bunga from '../assets/images/bunga.png';
+import foto3 from '../assets/images/3.png';
+import foto4 from '../assets/images/4.png';
+
+// ===== DAFTAR GAMBAR =====
+// Urutan di sini = urutan tampil.
+// src dari import (tanpa "/"), atau path string kalau file ada di folder public/.
+const IMAGE_LIST = [
+  { src: sectionAwal, name: 'SECTIONAWAL' },
+  { src: aneskabayi, name: 'aneskabayi' },
+  { src: bunga, name: 'bunga' },
+  { src: foto3, name: '3' },
+  { src: foto4, name: '4' },
+  { src: '/images/foto6.jpg', name: 'foto6' }, // ada di public/images/
 ];
 
+// ===== DAFTAR VIDEO (file di folder public/) =====
 const VIDEO_LIST = [
   { video: '/videos/video1.mp4', thumb: '/video-thumbnails/video1.jpg' },
   { video: '/videos/video2.mp4', thumb: '/video-thumbnails/video2.jpg' },
-  
 ];
 
-// Satu path = satu item, tidak ada yang diulang
-export const allImages = IMAGE_PATHS.map((url, i) => ({
+// Satu item = satu gambar, tidak ada yang diulang
+export const allImages = IMAGE_LIST.map((item, i) => ({
   id: `img-${i + 1}`,
-  url,
-  fileName: url.split('/').pop().replace(/\.[^/.]+$/, ''),
+  url: item.src,
+  fileName: item.name,
   title: ' ',
 }));
 
