@@ -547,7 +547,7 @@
           Aneska
         </span>
         <div className="flex items-end justify-between">
-          <span className="text-2xl font-serif italic font-semibold text-[#800020] md:text-4xl">For Aneska ✨</span>
+          <span className="text-2xl font-serif italic font-semibold text-[#800020] md:text-4xl">Hi, Anes</span>
           <span
             ref={numRef}
             className="text-[clamp(4rem,16vw,11rem)] font-serif font-bold leading-none tabular-nums text-[#580016]"
