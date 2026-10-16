@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { motion, animate, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, animate, useMotionValue, useTransform } from 'framer-motion';
 import { ChevronLeft, ChevronRight, BookOpen, X } from 'lucide-react';
 import { BOOK_DATA } from '../../data/bookContent';
 import { playPop, playChime } from '../../utils/sound';
@@ -50,6 +50,17 @@ const ROSE_DEEP = '#8f3d57';
 const LEAF = '#9db296'; // hijau cuma buat daun
 const LEAF_DARK = '#5f7559';
 const CLOTH = 'linear-gradient(145deg, #f6d0da 0%, #ecaebd 55%, #dc93a6 100%)';
+
+/* Animasi balik halaman versi ringan (HP): cuma 2 halaman yang ada di memori */
+const FLIP_MS = 0.7;
+const flipVariants = {
+  enter: (d) => (d > 0 ? { rotateY: 0, zIndex: 1 } : { rotateY: -100, zIndex: 2, opacity: 0.55 }),
+  center: (d) => ({ rotateY: 0, zIndex: d > 0 ? 1 : 2, opacity: 1 }),
+  exit: (d) =>
+    d > 0
+      ? { rotateY: -100, zIndex: 2, opacity: 0.55 }
+      : { rotateY: 0, zIndex: 1, opacity: 0.99, transition: { duration: FLIP_MS } }, // tahan sampai halaman baru selesai menutup
+};
 
 const faceBase = {
   position: 'absolute',
@@ -776,13 +787,16 @@ export default function PoeticScrapbook() {
   const [topLeaf, setTopLeaf] = useState(null);
   const [coverHover, setCoverHover] = useState(false);
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
-  const [mSide, setMSide] = useState('left'); // mobile: halaman mana yang lagi dilihat
+  const [mSide, setMSide] = useState('left'); // desktop/tablet only
+  const [dir, setDir] = useState(1); // arah balik halaman (HP): 1 maju, -1 mundur
+  const [lp, setLp] = useState(-1); // MODE HP (lite): index halaman, -1 = sampul tertutup
 
   const fRef = useRef(0);
   const timerRef = useRef(null);
   const sideRef = useRef('left');
   const sectionRef = useRef(null);
   const navRef = useRef({});
+  const liteOpenRef = useRef(false);
 
   const isMobile = vw < 640;
   const mobileRef = useRef(isMobile);
@@ -861,7 +875,29 @@ export default function PoeticScrapbook() {
     }
     stepTo(cur - 1);
   };
-  navRef.current = { next, prev };
+  /* ---- MODE HP (lite): tanpa 3D, cuma 1 halaman datar yang di-render ---- */
+  const liteNext = () => {
+    if (lp === -1) {
+      playChime();
+      window.dispatchEvent(new CustomEvent('aneska-open-sketchbook'));
+      setDir(1);
+      setLp(0);
+      return;
+    }
+    if (lp < pages.length - 1) {
+      playPop();
+      setDir(1);
+      setLp(lp + 1);
+    }
+  };
+  const litePrev = () => {
+    if (lp === -1) return;
+    playPop();
+    setDir(-1);
+    setLp(lp - 1); // dari halaman 0 -> -1 (sampul)
+  };
+  liteOpenRef.current = lp >= 0;
+  navRef.current = isMobile ? { next: liteNext, prev: litePrev } : { next, prev };
 
   useEffect(() => {
     const onKey = (e) => {
@@ -890,7 +926,7 @@ export default function PoeticScrapbook() {
       const dx = e.changedTouches[0].clientX - sx;
       const dy = e.changedTouches[0].clientY - sy;
       sx = sy = null;
-      if (fRef.current === 0) return;
+      if (fRef.current === 0 && !liteOpenRef.current) return;
       if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
       if (dx < 0) navRef.current.next();
       else navRef.current.prev();
@@ -935,6 +971,157 @@ export default function PoeticScrapbook() {
     : isMobile
     ? 'Geser layar atau pakai tombol di bawah untuk membalik halaman.'
     : 'Klik tepi halaman atau pakai tombol ← → untuk membalik lembar demi lembar.';
+
+  /* ==================== MODE HP (lite) ==================== */
+  if (isMobile) {
+    const open = lp >= 0;
+    const liteScale = Math.min(1, (vw - 24) / PW);
+    const liteChapter = open ? pages[lp]?.ci ?? 0 : 0;
+    const liteEnd = lp === pages.length - 1;
+    return (
+      <section
+        ref={sectionRef}
+        id="favorites-preview"
+        className="relative w-full overflow-hidden py-10"
+        style={{ touchAction: 'pan-y', background: '#fbeef0' }}
+      >
+        <style>{CSS}</style>
+
+        <div className="relative mx-auto mb-6 max-w-5xl px-6 text-center">
+          <span
+            className="inline-flex items-center gap-2 rounded-full border bg-[#fffdf8]/80 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.24em]"
+            style={{ fontFamily: F_BODY, color: SAGE_DARK, borderColor: `${SAGE}55` }}
+          >
+            <Bow className="w-5" />
+            Taman Catatan
+            <Bow className="w-5" style={{ transform: 'scaleX(-1)' }} />
+          </span>
+          <h2 className="mt-3 text-[28px] font-normal italic tracking-tight" style={{ fontFamily: F_DISPLAY, color: SAGE_DARK }}>
+            {BOOK_DATA.meta.title}
+          </h2>
+          <p className="mx-auto mt-2 max-w-xs text-sm font-light" style={{ fontFamily: F_BODY, color: `${INK}b0` }}>
+            {open ? 'Geser layar atau pakai tombol di bawah untuk membalik halaman.' : 'Ketuk sampul untuk membuka buku.'}
+          </p>
+        </div>
+
+        <div className="relative flex w-full justify-center px-2">
+          <div style={{ width: PW * liteScale, height: PH * liteScale }}>
+            <div
+              style={{
+                width: PW,
+                height: PH,
+                transform: `scale(${liteScale})`,
+                transformOrigin: 'top left',
+                position: 'relative',
+                overflow: 'hidden',
+                perspective: 1400,
+                borderRadius: 6,
+                border: `1px solid ${SAGE}`,
+                boxShadow: '0 10px 24px -10px rgba(130,60,85,0.45)',
+              }}
+            >
+              <AnimatePresence initial={false} custom={dir}>
+                <motion.div
+                  key={lp}
+                  custom={dir}
+                  variants={flipVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: FLIP_MS, ease: EASE }}
+                  className="absolute inset-0"
+                  style={{
+                    transformOrigin: 'left center',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    ...(open ? paperTexture : {}),
+                  }}
+                >
+                  {open ? (
+                    renderPage(pages[lp], lp)
+                  ) : (
+                    <div role="button" tabIndex={0} aria-label="Buka buku" className="h-full w-full cursor-pointer" onClick={liteNext}>
+                      <CoverFront src={COVER_SRC} hover={false} />
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative mx-auto mt-5 flex max-w-xl flex-col items-center gap-4 px-4">
+          {!open ? (
+            <button
+              onClick={liteNext}
+              className="flex cursor-pointer items-center gap-2 rounded-full border bg-[#fffdf8]/90 px-5 py-2.5 text-xs font-medium shadow-md"
+              style={{ color: SAGE_DARK, borderColor: `${SAGE}66`, fontFamily: F_BODY }}
+            >
+              <BookOpen className="h-4 w-4" />
+              <span>Mulai Membaca</span>
+            </button>
+          ) : (
+            <>
+              <div className="flex w-full items-center justify-between gap-2">
+                <button
+                  onClick={litePrev}
+                  aria-label="Sebelumnya"
+                  className="flex cursor-pointer items-center justify-center rounded-full bg-[#d17f95] text-[#faf6ee] shadow"
+                  style={{ minWidth: 44, minHeight: 44 }}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <div className="min-w-0 text-center text-[10px] font-medium tracking-widest" style={{ fontFamily: F_BODY, color: SAGE_DARK }}>
+                  {liteEnd ? 'PENUTUP' : liteChapter === 0 ? 'PEMBUKA' : `BAB ${toRoman(liteChapter)} DARI ${toRoman(n - 1)}`}
+                  <span className="ml-2 opacity-60">· HAL. {lp + 1}/{pages.length}</span>
+                </div>
+                <button
+                  onClick={liteNext}
+                  disabled={liteEnd}
+                  aria-label="Selanjutnya"
+                  className="flex cursor-pointer items-center justify-center rounded-full bg-[#d17f95] text-[#faf6ee] shadow disabled:pointer-events-none disabled:opacity-30"
+                  style={{ minWidth: 44, minHeight: 44 }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-1.5">
+                {chapters.map((ch, idx) => (
+                  <button
+                    key={ch.id ?? idx}
+                    onClick={() => {
+                      playPop();
+                      setDir(openers[idx] >= lp ? 1 : -1);
+                      setLp(openers[idx]);
+                    }}
+                    className={`cursor-pointer rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                      !liteEnd && liteChapter === idx ? 'bg-[#b96a7d] text-[#faf6ee]' : 'bg-[#e8a9b8]/25 text-[#8f4a5d]'
+                    }`}
+                    style={{ fontFamily: F_BODY }}
+                  >
+                    {idx === 0 ? 'Pembuka' : toRoman(idx)}
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    playPop();
+                    setDir(-1);
+                    setLp(-1);
+                  }}
+                  className="ml-1 flex cursor-pointer items-center gap-1 rounded-full bg-black/10 px-3 py-1 text-[11px] font-medium"
+                  style={{ color: INK, fontFamily: F_BODY }}
+                >
+                  <X className="h-3 w-3" />
+                  Tutup Buku
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -981,6 +1168,8 @@ export default function PoeticScrapbook() {
       <Sparkle style={{ top: '70%', left: '16%', fontSize: 15, color: '#e8a9ba', animationDelay: '1.2s' }}>♡</Sparkle>
       <Sparkle style={{ top: '76%', right: '18%', fontSize: 19, color: '#d17f95', animationDelay: '.2s' }}>♡</Sparkle>
 
+      {!isMobile && (
+        <>
       {/* buket di kiri & kanan (layar lebar) */}
       <img
         src={getBouquetUrl(1)}
@@ -1010,6 +1199,8 @@ export default function PoeticScrapbook() {
         className="pointer-events-none absolute right-0 top-24 hidden w-[120px] select-none opacity-90 xl:block"
         style={{ transform: 'translateX(26%) rotate(-10deg)' }}
       />
+        </>
+      )}
 
       {/* Header */}
       <div className="relative mx-auto mb-10 max-w-5xl px-6 text-center md:mb-14">
