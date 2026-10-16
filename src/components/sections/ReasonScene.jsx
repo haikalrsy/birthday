@@ -29,12 +29,8 @@ import foto22 from '../../assets/images/landscape3.png';
 import foto23 from '../../assets/images/masakan.png';
 import foto24 from '../../assets/images/anesk.jpeg';
 import foto25 from '../../assets/images/pertamakaliketemumamaayah.png';
-
 import foto26 from '../../assets/images/bunga.png';
-
-import foto27 from '../../assets/images/3.png';
 import foto28 from '../../assets/images/keychain2.png';
-
 import foto29 from '../../assets/images/ultahhaikal2.jpeg';
 
 
@@ -71,7 +67,7 @@ const MOMENTS = [
   { image: foto21, title: 'foto bareng di sekolah kee 2 paparazi', text: 'INIII FOTOOO DI KORIDORR SEKOLAHH GEMESS BANGET' },
   { image: foto22, title: 'Landscape ke 4', text: 'KAKWKAWKA INI SENENG BANGETT AKUUU KM CANTIKK BANGETT KAMU FOTO BACKGROUND NYA TALIWANG BALI' },
   { image: foto23, title: 'Pertama kali aku cobainn masakan mama', text: 'INII PAS MALEM TAKIBRANNN DAN MASAKAN MAMA ENAKKK BGTT' },
-  { image: foto27, title: 'Foto gemess kita', text: 'FOTO NYA IINII BAGUSS DAN INII DEPAN MEJA RESEPSIONIS' },
+  { image: foto3, title: 'Foto gemess kita', text: 'FOTO NYA IINII BAGUSS DAN INII DEPAN MEJA RESEPSIONIS' },
   { image: foto25, title: 'Pertama kali anes ketemuu mama ayahh aku', text: 'DISINII KAMU GEMEESS BANGETT KWKAWKK MALU MALU' },
   { image: foto26, title: 'Bunga ke 5', text: 'BENTUKK APRESIASII AKUU JUGAA KAMU SUDAA BERUSAHAA UNTUK LOMBAA SAYANGGG' },
   { image: foto24, title: 'Nonton bareng keluarga anes', text: 'NDJSANDKJANDIS INI PERTAMAA KALI AKU KETEMU KELUARGAA BESARR KAMU DAN IKUT NONTON' },
@@ -175,7 +171,8 @@ export default function ReasonsScene() {
                 src={r.image}
                 alt={r.title}
                 draggable={false}
-                loading="eager"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             )}

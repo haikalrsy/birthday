@@ -31,6 +31,7 @@ const CAPTIONS = [
 const PW = 344;
 const PH = 550;
 const OVERHANG = 7;
+const PAD = 12; // ruang aman kiri/kanan buku biar bayangan & papan sampul nggak kepotong
 const EASE = [0.645, 0.045, 0.355, 1];
 
 const F_BODY = "'Newsreader', 'EB Garamond', Georgia, serif";
@@ -277,7 +278,15 @@ function PhotoFrame({ src, alt, caption, w = 150, h = 180 }) {
           <Pearl key={i} size={4} style={{ position: 'absolute', ...pos }} />
         ))}
         <div className="overflow-hidden" style={{ width: w, height: h, borderRadius: 2, border: `1px solid ${INK}22` }}>
-          <img src={src} alt={alt} className="h-full w-full select-none object-cover" style={{ filter: 'saturate(0.94) contrast(1.02)' }} draggable={false} />
+          <img
+            src={src}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full select-none object-cover"
+            style={{ filter: 'saturate(0.94) contrast(1.02)' }}
+            draggable={false}
+          />
         </div>
       </div>
       {caption && (
@@ -446,30 +455,29 @@ function TextPage({ page, ch, side, no }) {
             </p>
           )}
 
-{showImg && (
-  <div className="mt-5 flex shrink-0 justify-center pb-2">
-    <figure className="w-full max-w-[220px]">
-      <img
-        src={img.src}
-        alt={img.caption || ch.title}
-        className="block aspect-square w-full object-cover"
-        draggable={false}
-      />
-      {img.caption && (
-        <figcaption
-          className="mt-2 text-center text-xs italic"
-          style={{
-            fontFamily: F_BODY,
-            color: `${INK}99`,
-          }}
-        >
-          {img.caption}
-        </figcaption>
-      )}
-    </figure>
-  </div>
-)}
-
+          {showImg && (
+            <div className="mt-5 flex shrink-0 justify-center pb-2">
+              <figure className="w-full max-w-[220px]">
+                <img
+                  src={img.src}
+                  alt={img.caption || ch.title}
+                  className="block aspect-square w-full object-cover"
+                  draggable={false}
+                />
+                {img.caption && (
+                  <figcaption
+                    className="mt-2 text-center text-xs italic"
+                    style={{
+                      fontFamily: F_BODY,
+                      color: `${INK}99`,
+                    }}
+                  >
+                    {img.caption}
+                  </figcaption>
+                )}
+              </figure>
+            </div>
+          )}
         </div>
 
         <div className="mt-2 text-center text-[11px]" style={{ fontFamily: F_BODY, color: `${INK}80` }}>
@@ -570,7 +578,7 @@ function InsideCover({ children }) {
 /* ==================================================================
    LEMBAR (LEAF)
 ================================================================== */
-function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, onSettled }) {
+function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, onSettled, isVisible = true }) {
   const rot = useMotionValue(0);
 
   useEffect(() => {
@@ -604,10 +612,17 @@ function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, on
         zIndex: z,
       }}
     >
-      <div style={{ ...faceBase, ...faceRect, boxShadow: isCover ? '-3px 8px 24px -4px rgba(130,60,85,0.5)' : undefined }}>
-        {front}
+      <div
+        style={{
+          ...faceBase,
+          ...faceRect,
+          ...(isCover ? {} : paperTexture),
+          boxShadow: isCover ? '-3px 8px 24px -4px rgba(130,60,85,0.5)' : undefined,
+        }}
+      >
+        {isVisible ? front : null}
         <motion.div className="pointer-events-none absolute inset-0 bg-black" style={{ opacity: frontShade }} />
-        {!isCover && (
+        {!isCover && isVisible && (
           <button
             aria-label="Halaman berikutnya"
             onClick={onForward}
@@ -620,18 +635,27 @@ function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, on
         )}
       </div>
 
-      <div style={{ ...faceBase, ...faceRect, transform: 'rotateY(180deg)' }}>
-        {back}
+      <div
+        style={{
+          ...faceBase,
+          ...faceRect,
+          ...(isCover ? {} : paperTexture),
+          transform: 'rotateY(180deg)',
+        }}
+      >
+        {isVisible ? back : null}
         <motion.div className="pointer-events-none absolute inset-0 bg-black" style={{ opacity: backShade }} />
-        <button
-          aria-label="Halaman sebelumnya"
-          onClick={onBackward}
-          className="group absolute left-0 top-0 flex h-full w-14 cursor-pointer items-end justify-start pb-6 pl-2"
-        >
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#b96a7d]/0 text-[#b96a7d]/0 transition-all group-hover:bg-[#b96a7d]/85 group-hover:text-[#faf6ee]">
-            <ChevronLeft className="h-4 w-4" />
-          </span>
-        </button>
+        {isVisible && (
+          <button
+            aria-label="Halaman sebelumnya"
+            onClick={onBackward}
+            className="group absolute left-0 top-0 flex h-full w-14 cursor-pointer items-end justify-start pb-6 pl-2"
+          >
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#b96a7d]/0 text-[#b96a7d]/0 transition-all group-hover:bg-[#b96a7d]/85 group-hover:text-[#faf6ee]">
+              <ChevronLeft className="h-4 w-4" />
+            </span>
+          </button>
+        )}
       </div>
     </motion.div>
   );
@@ -656,6 +680,7 @@ const CSS = `
 @keyframes ps-float { from { transform: translateY(0) rotate(var(--r, 0deg)); } to { transform: translateY(-7px) rotate(var(--r, 0deg)); } }
 .ps-bow { animation: ps-float 4.2s ease-in-out infinite alternate; }
 @media (prefers-reduced-motion: reduce) { .ps-spark, .ps-bow { animation: none; } }
+@media (max-width: 640px) { .ps-spark, .ps-bow { display: none; } }
 `;
 
 /* ==================================================================
@@ -665,7 +690,7 @@ export default function PoeticScrapbook() {
   const chapters = BOOK_DATA.chapters;
   const n = chapters.length;
 
-  /* Susun halaman: depan (buket + judul), tiap bab, spread buket antar bab, penutup */
+  /* Susun halaman: depan (buket + judul), tiap bab, penutup */
   const { pages, openers } = useMemo(() => {
     const pages = [];
     const openers = [];
@@ -680,14 +705,12 @@ export default function PoeticScrapbook() {
       openers[ci] = pages.length;
       pages.push({ type: 'opener', ci });
       const paras = [...(ch.preface || []), ...(ch.paragraphs || [])];
-      const chunks = paginate(paras);
+      const chunks = paginate(paras, 850);
       chunks.forEach((chunk, k) =>
         pages.push({ type: 'text', ci, chunk, first: k === 0, last: k === chunks.length - 1 })
       );
       if (!chunks.length) plate(ci);
-      if (ci < n - 1) {
-        if (pages.length % 2 === 1) plate(ci);
-        plate(ci);
+      if (ci < n - 1 && pages.length % 2 === 1) {
         plate(ci);
       }
     });
@@ -727,20 +750,37 @@ export default function PoeticScrapbook() {
   const [topLeaf, setTopLeaf] = useState(null);
   const [coverHover, setCoverHover] = useState(false);
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [mSide, setMSide] = useState('left'); // mobile: halaman mana yang lagi dilihat
+
   const fRef = useRef(0);
   const timerRef = useRef(null);
+  const sideRef = useRef('left');
+  const sectionRef = useRef(null);
+  const navRef = useRef({});
+
+  const isMobile = vw < 640;
+  const mobileRef = useRef(isMobile);
+  mobileRef.current = isMobile;
 
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);
     window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
     return () => {
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
       clearInterval(timerRef.current);
     };
   }, []);
 
-  const stepTo = (target) => {
+  const setSide = (s) => {
+    sideRef.current = s;
+    setMSide(s);
+  };
+
+  const stepTo = (target, side = 'left') => {
     clearInterval(timerRef.current);
+    setSide(side);
     const t = Math.max(0, Math.min(L, target));
     if (fRef.current === t) return;
     const tick = () => {
@@ -758,21 +798,50 @@ export default function PoeticScrapbook() {
         playChime();
         // Signal the music player to switch to sketchbook queue
         window.dispatchEvent(new CustomEvent('aneska-open-sketchbook'));
-      }
-      else playPop();
+      } else playPop();
     };
     tick();
     timerRef.current = setInterval(tick, 230);
   };
 
-  const next = () => stepTo(fRef.current + 1);
-  const prev = () => stepTo(fRef.current - 1);
+  /* Mobile: kiri -> kanan -> lembar berikutnya (kiri) -> ... */
+  const next = () => {
+    const cur = fRef.current;
+    if (cur === L) return;
+    if (mobileRef.current && cur > 0) {
+      if (sideRef.current === 'left') {
+        setSide('right');
+        playPop();
+        return;
+      }
+      stepTo(cur + 1, 'left');
+      return;
+    }
+    stepTo(cur + 1);
+  };
+
+  const prev = () => {
+    const cur = fRef.current;
+    if (cur === 0) return;
+    if (mobileRef.current) {
+      if (sideRef.current === 'right') {
+        setSide('left');
+        playPop();
+        return;
+      }
+      if (cur === 1) return stepTo(0);
+      stepTo(cur - 1, 'right');
+      return;
+    }
+    stepTo(cur - 1);
+  };
+  navRef.current = { next, prev };
 
   useEffect(() => {
     const onKey = (e) => {
       if (fRef.current === 0) return;
-      if (e.key === 'ArrowRight') stepTo(fRef.current + 1);
-      if (e.key === 'ArrowLeft') stepTo(fRef.current - 1);
+      if (e.key === 'ArrowRight') navRef.current.next();
+      if (e.key === 'ArrowLeft') navRef.current.prev();
       if (e.key === 'Escape') stepTo(0);
     };
     window.addEventListener('keydown', onKey);
@@ -780,30 +849,74 @@ export default function PoeticScrapbook() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Swipe: cuma di area section, cuma saat buku terbuka, cuma kalau gerakannya dominan horizontal
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    let sx = null;
+    let sy = null;
+    const onStart = (e) => {
+      sx = e.touches[0].clientX;
+      sy = e.touches[0].clientY;
+    };
+    const onEnd = (e) => {
+      if (sx === null) return;
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      sx = sy = null;
+      if (fRef.current === 0) return;
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      if (dx < 0) navRef.current.next();
+      else navRef.current.prev();
+    };
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchend', onEnd, { passive: true });
+    return () => {
+      el.removeEventListener('touchstart', onStart);
+      el.removeEventListener('touchend', onEnd);
+    };
+  }, []);
+
   const isClosed = f === 0;
   const isSpread = f > 0;
 
-  const scaleSpread = Math.min(1, (vw - 24) / (2 * PW + 40));
-  const scaleClosed = Math.min(1.05, (vw - 24) / (PW + 50));
-  const scale = isClosed ? scaleClosed : scaleSpread;
-  const shiftX = isClosed ? -PW / 2 : 0;
+  /* ---- Layout responsif ----
+     "Jendela" = bagian buku yang kelihatan.
+     - tertutup / mobile : 1 halaman (PW)
+     - desktop terbuka   : 2 halaman (2PW)
+     Jendela selalu di-center, jadi nggak ada lagi geseran aneh. */
+  const showOne = isClosed || isMobile;
+  const winW = (showOne ? PW : 2 * PW) + 2 * PAD;
+  const scale = Math.min(isClosed ? 1.05 : 1, (vw - (isMobile ? 16 : 24)) / winW);
+
+  // Halaman kiri ada di x 0..PW, kanan di PW..2PW (di dalam motion.div)
+  const shiftX = isClosed
+    ? PAD - PW // tampilkan cover (kanan)
+    : isMobile
+    ? mSide === 'right' ? PAD - PW : PAD // satu halaman: kanan / kiri
+    : PAD; // desktop: dua-duanya
 
   const leftIdx = 2 * f - 2;
   const nowChapter = f >= 1 && f < L ? pages[leftIdx]?.ci ?? 0 : n - 1;
   const statusLabel =
     f === L ? 'PENUTUP' : nowChapter === 0 ? 'PEMBUKA' : `BAB ${toRoman(nowChapter)} DARI ${toRoman(n - 1)}`;
+  const pageLabel = isMobile ? leftIdx + (mSide === 'left' ? 1 : 2) : `${leftIdx + 1}–${leftIdx + 2}`;
 
   const statusText = isClosed
     ? 'Sebuah arsip kecil yang tumbuh di antara bunga lily. Klik sampul untuk membukanya.'
     : f === L
-    ? 'Halaman terakhir · klik tepi kiri halaman untuk kembali membaca.'
+    ? 'Halaman terakhir · gunakan tombol kembali untuk membaca ulang.'
+    : isMobile
+    ? 'Geser layar atau pakai tombol di bawah untuk membalik halaman.'
     : 'Klik tepi halaman atau pakai tombol ← → untuk membalik lembar demi lembar.';
 
   return (
     <section
+      ref={sectionRef}
       id="favorites-preview"
-      className="relative w-full overflow-hidden py-16 md:py-24"
+      className="relative w-full overflow-hidden py-12 md:py-24"
       style={{
+        touchAction: 'pan-y',
         background: '#fbeef0',
         backgroundImage: `
           radial-gradient(circle at 50% 14%, rgba(255,255,255,0.9) 0%, transparent 58%),
@@ -894,11 +1007,11 @@ export default function PoeticScrapbook() {
       </div>
 
       {/* Panggung buku */}
-      <div className="relative flex w-full justify-center px-3">
+      <div className="relative flex w-full justify-center px-2">
         <div
           className="relative"
           style={{
-            width: 2 * PW * scale,
+            width: winW * scale,
             height: (PH + 70) * scale,
             transition: 'width .6s ease, height .6s ease',
           }}
@@ -908,18 +1021,19 @@ export default function PoeticScrapbook() {
               position: 'absolute',
               top: 0,
               left: 0,
-              width: 2 * PW,
+              width: winW,
               height: PH + 70,
               transform: `scale(${scale})`,
               transformOrigin: 'top left',
-              transition: 'transform .6s ease',
+              transition: 'transform .6s ease, width .6s ease',
               perspective: 2800,
               perspectiveOrigin: '50% 40%',
+              overflow: isMobile && isSpread ? 'hidden' : 'visible', // potong halaman satunya di mobile
             }}
           >
             <motion.div
               animate={{ x: shiftX }}
-              transition={{ duration: 1.0, ease: EASE }}
+              transition={{ duration: isMobile ? 0.7 : 1.0, ease: EASE }}
               style={{
                 position: 'absolute',
                 top: 30,
@@ -1014,12 +1128,18 @@ export default function PoeticScrapbook() {
                 const z = topLeaf === i ? 200 : flipped ? i : L - i;
                 let angle = flipped ? -180 : 0;
                 if (i === 0 && isClosed && coverHover) angle = -15;
+                const isVisible =
+                  Math.abs(i - f) <= 2 ||
+                  (topLeaf !== null && Math.abs(i - topLeaf) <= 2) ||
+                  (isClosed && i === 0);
+
                 return (
                   <Leaf
                     key={i}
                     index={i}
                     angle={angle}
                     z={z}
+                    isVisible={isVisible}
                     front={
                       leaf.isCover ? (
                         <div
@@ -1040,8 +1160,8 @@ export default function PoeticScrapbook() {
                     }
                     back={leaf.back}
                     isCover={leaf.isCover}
-                    onForward={() => stepTo(i + 1)}
-                    onBackward={() => stepTo(i)}
+                    onForward={() => (isMobile ? next() : stepTo(i + 1))}
+                    onBackward={() => (isMobile ? prev() : stepTo(i))}
                     onSettled={(idx) => setTopLeaf((t) => (t === idx ? null : t))}
                   />
                 );
@@ -1068,21 +1188,23 @@ export default function PoeticScrapbook() {
             <div className="flex w-full items-center justify-between gap-2">
               <button
                 onClick={prev}
-                className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#d17f95] px-4 py-2 text-xs font-medium text-[#faf6ee] shadow transition-all hover:bg-[#b96a7d]"
+                className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#d17f95] px-4 py-2 text-xs font-medium text-[#faf6ee] shadow transition-all hover:bg-[#b96a7d] sm:px-4 sm:py-2"
+                style={{ minWidth: 44, minHeight: 44 }}
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span className="hidden sm:inline">Sebelumnya</span>
               </button>
 
-              <div className="text-center text-[11px] font-medium tracking-widest" style={{ fontFamily: F_BODY, color: SAGE_DARK }}>
+              <div className="min-w-0 text-center text-[10px] font-medium tracking-widest sm:text-[11px]" style={{ fontFamily: F_BODY, color: SAGE_DARK }}>
                 {statusLabel}
-                {f < L && <span className="ml-2 opacity-55">· HAL. {leftIdx + 1}–{leftIdx + 2}</span>}
+                {f < L && <span className="ml-2 opacity-55">· HAL. {pageLabel}</span>}
               </div>
 
               <button
                 onClick={next}
                 disabled={f === L}
                 className="flex cursor-pointer items-center gap-1.5 rounded-full bg-[#d17f95] px-4 py-2 text-xs font-medium text-[#faf6ee] shadow transition-all hover:bg-[#b96a7d] disabled:pointer-events-none disabled:opacity-30"
+                style={{ minWidth: 44, minHeight: 44 }}
               >
                 <span className="hidden sm:inline">Selanjutnya</span>
                 <ChevronRight className="h-4 w-4" />

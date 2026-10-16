@@ -145,13 +145,15 @@ function HeroScene({ ready, onExploreFavorites }) {
       const cue = scene.querySelector('[data-cue]');
       return {
         onProgress(p) {
-          bg.style.transform = `scale(${mix(1, 1.16, easeOut(p))})`;
+          if (bg) bg.style.transform = `scale(${mix(1, 1.16, easeOut(p))})`;
           const fade = 1 - seg(p, 0.2, 0.65);
-          copy.style.transform = `translate3d(0, ${-p * 140}px, 0)`;
-          copy.style.opacity = fade;
-          copy.style.visibility = fade < 0.02 ? 'hidden' : 'visible';
+          if (copy) {
+            copy.style.transform = `translate3d(0, ${-p * 140}px, 0)`;
+            copy.style.opacity = fade;
+            copy.style.visibility = fade < 0.02 ? 'hidden' : 'visible';
+          }
           if (aside) aside.style.opacity = 1 - seg(p, 0.1, 0.4);
-          cue.style.opacity = 1 - seg(p, 0, 0.12);
+          if (cue) cue.style.opacity = 1 - seg(p, 0, 0.12);
         },
       };
     },
@@ -236,8 +238,8 @@ function HeroScene({ ready, onExploreFavorites }) {
           className="pointer-events-none absolute right-5 top-24 z-10 md:right-10 xl:right-16 xl:top-1/2 xl:-translate-y-1/2"
         >
           <div data-fade className="relative xl:h-[400px] xl:w-[300px]">
-            {HERO_POLAROIDS.map((p) => (
-              <div key={p.src} data-float className={`absolute hidden xl:block ${p.cls}`}>
+            {HERO_POLAROIDS.map((p, i) => (
+              <div key={p.src || `hero-pol-${i}`} data-float className={`absolute hidden xl:block ${p.cls}`}>
                 <div
                   className="rounded-[10px] bg-[#faf6ee] p-2 pb-1.5 shadow-[0_20px_44px_-14px_rgba(88,0,22,0.45)]"
                   style={{ transform: `rotate(${p.rot}deg)` }}
@@ -245,6 +247,8 @@ function HeroScene({ ready, onExploreFavorites }) {
                   <img
                     src={p.src}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     draggable={false}
                     className="aspect-[4/5] w-full rounded-[6px] object-cover"
                   />
@@ -348,47 +352,53 @@ function GalleryScene() {
 
           const e = easeInOut(seg(p, 0, 0.5));
 
-          frame.style.clipPath = 'none';
+          if (frame) {
+            frame.style.clipPath = 'none';
 
-          if (e >= 1) {
-            frame.style.webkitMaskImage = 'none';
-            frame.style.maskImage = 'none';
-            lily.style.filter = 'none';
-          } else {
-            // bunga membesar sedikit, lalu lingkaran mengisi celah sampai layar penuh
-            const size = startSize * (1 + 1.1 * e);
-            const fill = Math.pow(seg(e, 0.3, 1), 2);
-            const rc = farthest * 1.03 * fill;
+            if (e >= 1) {
+              frame.style.webkitMaskImage = 'none';
+              frame.style.maskImage = 'none';
+              if (lily) lily.style.filter = 'none';
+            } else {
+              // bunga membesar sedikit, lalu lingkaran mengisi celah sampai layar penuh
+              const size = startSize * (1 + 1.1 * e);
+              const fill = Math.pow(seg(e, 0.3, 1), 2);
+              const rc = farthest * 1.03 * fill;
 
-            const img = `${LILY_MASK}, radial-gradient(circle at 50% ${LILY_CENTER_Y}%, #000 ${rc}px, transparent ${rc + 1.5}px)`;
-            const sz = `${size}px ${size}px, 100% 100%`;
-            const pos = `50% ${LILY_CENTER_Y}%, 0 0`;
+              const img = `${LILY_MASK}, radial-gradient(circle at 50% ${LILY_CENTER_Y}%, #000 ${rc}px, transparent ${rc + 1.5}px)`;
+              const sz = `${size}px ${size}px, 100% 100%`;
+              const pos = `50% ${LILY_CENTER_Y}%, 0 0`;
 
-            frame.style.webkitMaskImage = img;
-            frame.style.maskImage = img;
-            frame.style.webkitMaskSize = sz;
-            frame.style.maskSize = sz;
-            frame.style.webkitMaskPosition = pos;
-            frame.style.maskPosition = pos;
-            frame.style.webkitMaskRepeat = 'no-repeat, no-repeat';
-            frame.style.maskRepeat = 'no-repeat, no-repeat';
+              frame.style.webkitMaskImage = img;
+              frame.style.maskImage = img;
+              frame.style.webkitMaskSize = sz;
+              frame.style.maskSize = sz;
+              frame.style.webkitMaskPosition = pos;
+              frame.style.maskPosition = pos;
+              frame.style.webkitMaskRepeat = 'no-repeat, no-repeat';
+              frame.style.maskRepeat = 'no-repeat, no-repeat';
 
-            lily.style.filter = e < 0.3 ? LILY_OUTLINE : 'none';
+              if (lily) lily.style.filter = e < 0.3 ? LILY_OUTLINE : 'none';
+            }
           }
-          wall.style.transform = `scale(${mix(1.3, 1, e)})`;
+          if (wall) wall.style.transform = `scale(${mix(1.3, 1, e)})`;
 
           // Baris teks naik dari balik topeng
           lines.forEach((el, i) => {
-            const t = easeOut(seg(p, 0.2 + i * 0.12, 0.36 + i * 0.12));
-            el.style.transform = `translate3d(0, ${(1 - t) * 115}%, 0)`;
+            if (el) {
+              const t = easeOut(seg(p, 0.2 + i * 0.12, 0.36 + i * 0.12));
+              el.style.transform = `translate3d(0, ${(1 - t) * 115}%, 0)`;
+            }
           });
 
           // Keluar: teks naik dan hilang, layar gelap terbuka
           const x = seg(p, 0.72, 0.92);
-          copy.style.opacity = 1 - x;
-          copy.style.transform = `translate3d(0, ${-x * 60}px, 0)`;
-          veil.style.opacity = mix(0.25, 0.1, easeInOut(seg(p, 0.7, 0.95)));
-          hint.style.opacity = seg(p, 0.9, 1);
+          if (copy) {
+            copy.style.opacity = 1 - x;
+            copy.style.transform = `translate3d(0, ${-x * 60}px, 0)`;
+          }
+          if (veil) veil.style.opacity = mix(0.25, 0.1, easeInOut(seg(p, 0.7, 0.95)));
+          if (hint) hint.style.opacity = seg(p, 0.9, 1);
         },
       };
     },
@@ -521,8 +531,10 @@ function ClosingScene({ onExploreFavorites }) {
           if (img) img.style.transform = `scale(${mix(1.25, 1, e)})`;
 
           lines.forEach((el, i) => {
-            const t = easeOut(seg(p, 0.4 + i * 0.1, 0.62 + i * 0.1));
-            el.style.transform = `translate3d(0, ${(1 - t) * 115}%, 0)`;
+            if (el) {
+              const t = easeOut(seg(p, 0.4 + i * 0.1, 0.62 + i * 0.1));
+              el.style.transform = `translate3d(0, ${(1 - t) * 115}%, 0)`;
+            }
           });
 
           const s = seg(p, 0.65, 0.82);
@@ -588,6 +600,8 @@ function ClosingScene({ onExploreFavorites }) {
             data-img
             src={CLOSING_PHOTO}
             alt=""
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover object-[center_30%] will-change-transform"
           />
           <div className="absolute inset-0 bg-[#efe8dc]/70 backdrop-blur-[1px]" />
