@@ -38,13 +38,15 @@ const EASE = [0.645, 0.045, 0.355, 1];
 const F_BODY = "'Newsreader', 'EB Garamond', Georgia, serif";
 const F_DISPLAY = "'Instrument Serif', Georgia, serif";
 
-const PAPER_IMG = 'public/photos/bg.png';
-const PAPER = '#fdf6f2';
-const INK = '#2e1a20'; // lebih gelap
+// Foto tekstur kertas. Lebih aman & ringan kalau diunduh, dikecilkan (lebar ~600px, JPG)
+// lalu ditaruh di public/photos/paper.jpg -> ganti jadi '/photos/paper.jpg'
+const PAPER_IMG = 'https://i.pinimg.com/736x/ff/59/fa/ff59fa5aaed2472b8ec44905460a00cc.jpg';
+const PAPER = '#fdf6f2'; // warna krem (jangan diganti URL)
+const INK = '#2e1a20'; // teks isi, gelap biar kontras
 const SAGE = '#e3a3b4'; // pink muda (garis, bingkai, pembatas)
-const SAGE_DARK = '#7d3a4f'; // rose tua (judul), lebih gelap
+const SAGE_DARK = '#7d3a4f'; // rose tua (judul)
 const ROSE = '#d17f95';
-const ROSE_DEEP = '#8f3d57'; // lebih gelap
+const ROSE_DEEP = '#8f3d57';
 const LEAF = '#9db296'; // hijau cuma buat daun
 const LEAF_DARK = '#5f7559';
 const CLOTH = 'linear-gradient(145deg, #f6d0da 0%, #ecaebd 55%, #dc93a6 100%)';
@@ -55,19 +57,27 @@ const faceBase = {
   WebkitBackfaceVisibility: 'hidden',
 };
 
-const PAPER_VEIL = 0.81; // naik dari 0.79
+// 0 = foto penuh, 1 = foto hilang. Makin besar makin pudar & teks makin jelas.
+const PAPER_VEIL = 0.88;
 
-const paperTexture = {
-  backgroundColor: PAPER,
-  backgroundImage: `
-    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.45), transparent 85%),
-    linear-gradient(rgba(255,244,247,${PAPER_VEIL}), rgba(255,244,247,${PAPER_VEIL})),
-    url("${PAPER_IMG}")
-  `,
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  backgroundRepeat: 'no-repeat',
-};
+// HP / layar sentuh: pakai warna polos (foto di tiap lembar bikin Safari iPhone crash)
+const IS_SMALL =
+  typeof window !== 'undefined' &&
+  window.matchMedia('(max-width: 640px), (pointer: coarse)').matches;
+
+const paperTexture = IS_SMALL
+  ? { background: PAPER }
+  : {
+      backgroundColor: PAPER,
+      backgroundImage: `
+        radial-gradient(circle at 15% 10%, rgba(255,255,255,0.45), transparent 85%),
+        linear-gradient(rgba(255,244,247,${PAPER_VEIL}), rgba(255,244,247,${PAPER_VEIL})),
+        url("${PAPER_IMG}")
+      `,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    };
 
 function toRoman(num) {
   const map = [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
@@ -327,7 +337,7 @@ function PlatePage({ n, side }) {
       ))}
       <div className="relative flex h-full flex-col items-center px-9 pb-9 pt-8">
         <Bow className="w-9" />
-        <img src={getBouquetUrl(n % 8)} alt="" className="mt-1 w-full max-w-[252px] select-none" draggable={false} />
+        <img src={getBouquetUrl(n % 8)} alt="" loading="lazy" decoding="async" className="mt-1 w-full max-w-[252px] select-none" draggable={false} />
         <p className="mt-auto text-[22px] italic" style={{ fontFamily: F_DISPLAY, color: ROSE_DEEP }}>
           {CAPTIONS[n % CAPTIONS.length]}
         </p>
@@ -360,7 +370,7 @@ function TitlePage({ side }) {
         <p className="text-[11px] uppercase tracking-[0.5em]" style={{ fontFamily: F_BODY, color: SAGE_DARK }}>
           {AUTHOR}
         </p>
-        <img src={getBouquetUrl(2)} alt="" className="mt-auto w-[170px] select-none" draggable={false} />
+        <img src={getBouquetUrl(2)} alt="" loading="lazy" decoding="async" className="mt-auto w-[170px] select-none" draggable={false} />
       </div>
       <PageTrim />
       <Gutter side={side} />
@@ -428,7 +438,7 @@ function TextPage({ page, ch, side, no }) {
         className="relative flex h-full flex-col"
         style={{ padding: side === 'left' ? '28px 28px 30px 36px' : '28px 36px 30px 28px' }}
       >
-        <div className="truncate text-center text-[9px] uppercase tracking-[0.32em]" style={{ fontFamily: F_BODY, color: `${SAGE_DARK}b0` }}>
+        <div className="truncate text-center text-[9px] uppercase tracking-[0.32em]" style={{ fontFamily: F_BODY, color: SAGE_DARK }}>
           {side === 'left' ? AUTHOR : ch.title}
         </div>
         <div className="mx-auto mt-2 flex items-center gap-1.5">
@@ -492,7 +502,7 @@ function TextPage({ page, ch, side, no }) {
           )}
         </div>
 
-        <div className="mt-2 text-center text-[11px]" style={{ fontFamily: F_BODY, color: `${INK}80` }}>
+        <div className="mt-2 text-center text-[11px]" style={{ fontFamily: F_BODY, color: `${INK}b0` }}>
           · {no} ·
         </div>
       </div>
@@ -507,7 +517,7 @@ function EndPage({ side }) {
   return (
     <div className="relative flex h-full w-full flex-col items-center justify-center px-10 text-center" style={paperTexture}>
       <div className="pointer-events-none absolute" style={{ inset: 14, border: `1px solid ${SAGE}55`, borderRadius: 3 }} />
-      <img src={getBouquetUrl(3)} alt="" className="w-[170px] select-none" draggable={false} />
+      <img src={getBouquetUrl(3)} alt="" loading="lazy" decoding="async" className="w-[170px] select-none" draggable={false} />
       <p className="mt-1 text-[34px] italic" style={{ fontFamily: F_DISPLAY, color: SAGE_DARK }}>
         Bersambung…
       </p>
@@ -1069,7 +1079,7 @@ export default function PoeticScrapbook() {
                   height: 36,
                   borderRadius: '50%',
                   background: 'radial-gradient(ellipse at 50% 50%, rgba(130,60,85,0.38) 0%, rgba(130,60,85,0.13) 50%, transparent 75%)',
-                  filter: 'blur(12px)',
+                  filter: isMobile ? 'none' : 'blur(12px)',
                   transition: 'all .8s ease',
                 }}
               />
@@ -1144,9 +1154,10 @@ export default function PoeticScrapbook() {
                 const z = topLeaf === i ? 200 : flipped ? i : L - i;
                 let angle = flipped ? -180 : 0;
                 if (i === 0 && isClosed && coverHover) angle = -15;
+                const range = isMobile ? 1 : 2;
                 const isVisible =
-                  Math.abs(i - f) <= 2 ||
-                  (topLeaf !== null && Math.abs(i - topLeaf) <= 2) ||
+                  Math.abs(i - f) <= range ||
+                  (topLeaf !== null && Math.abs(i - topLeaf) <= range) ||
                   (isClosed && i === 0);
 
                 return (
