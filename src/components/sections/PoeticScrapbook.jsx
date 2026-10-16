@@ -4,7 +4,8 @@ import { ChevronLeft, ChevronRight, BookOpen, X } from 'lucide-react';
 import { BOOK_DATA } from '../../data/bookContent';
 import { playPop, playChime } from '../../utils/sound';
 import { getBouquetUrl } from './BouquetArt';
-import coverImg from '../../assets/images/cover.png';
+const coverImg = '/photos/cover.png';
+
 
 /* ------------------------------------------------------------------
    PENGATURAN
@@ -705,7 +706,7 @@ export default function PoeticScrapbook() {
       openers[ci] = pages.length;
       pages.push({ type: 'opener', ci });
       const paras = [...(ch.preface || []), ...(ch.paragraphs || [])];
-      const chunks = paginate(paras, 850);
+      const chunks = paginate(paras, 1200);
       chunks.forEach((chunk, k) =>
         pages.push({ type: 'text', ci, chunk, first: k === 0, last: k === chunks.length - 1 })
       );

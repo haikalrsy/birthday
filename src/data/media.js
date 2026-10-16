@@ -1,20 +1,11 @@
-// ===== GAMBAR DARI src/assets/images (di-import, jadi aman di Vercel) =====
-// Nama file harus persis sama, termasuk huruf besar-kecil dan ekstensi.
-import sectionAwal from '../assets/images/SECTIONAWAL.jpg';
-import aneskabayi from '../assets/images/aneskabayi.jpeg';
-import bunga from '../assets/images/bunga.png';
-import foto3 from '../assets/images/3.png';
-import foto4 from '../assets/images/4.png';
-
-// ===== DAFTAR GAMBAR =====
-// Urutan di sini = urutan tampil.
-// src dari import (tanpa "/"), atau path string kalau file ada di folder public/.
+// ===== GAMBAR DARI public/ (URL string langsung, tidak masuk Vite bundle) =====
+// Kalau foto ada di src/assets/, pindah ke public/photos/ atau public/images/ dan pakai URL string.
 const IMAGE_LIST = [
-  { src: sectionAwal, name: 'SECTIONAWAL' },
-  { src: aneskabayi, name: 'aneskabayi' },
-  { src: bunga, name: 'bunga' },
-  { src: foto3, name: '3' },
-  { src: foto4, name: '4' },
+  { src: '/photos/SECTIONAWAL.jpg', name: 'SECTIONAWAL' },
+  { src: '/photos/aneskabayi.jpeg', name: 'aneskabayi' },
+  { src: '/photos/bunga.png', name: 'bunga' },
+  { src: '/photos/3.png', name: '3' },
+  { src: '/photos/4.png', name: '4' },
   { src: '/images/foto6.jpg', name: 'foto6' }, // ada di public/images/
 ];
 

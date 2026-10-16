@@ -31,31 +31,15 @@ import {
   goTo,
 } from '../story/kit';
 
-import heroAnesk from '../../assets/images/anesk.jpeg';
-import heroSekolah from '../../assets/images/sekolah.png';
-import hero2 from '../../assets/images/2.png';
-import closingPhoto from '../../assets/images/3.png'; // foto penutup, ganti file kalau mau foto lain
-
-/*
-  Palet putih tulang (bone white):
-  #f4efe6  dasar section
-  #f7f2e9  section selang-seling
-  #faf6ee  kartu / tombol
-  #efe8dc  panel / overlay
-  #ebe3d5  hover
-  #e3d8c6  border
-  #d9cdb8  titik nonaktif
-*/
-
-/* ------------------------------------------------------------------ */
-/* Scene 1: Hero                                                        */
-/* ------------------------------------------------------------------ */
 
 const HERO_POLAROIDS = [
-  { cls: 'left-0 top-4 w-[150px]', rot: -8, cap: '', src: heroAnesk },
-  { cls: 'right-0 top-0 w-[160px]', rot: 6, cap: '', src: heroSekolah },
-  { cls: 'bottom-0 left-[70px] w-[170px]', rot: -2, cap: '', src: hero2 },
+  { cls: 'left-0 top-4 w-[150px]', rot: -8, cap: '', src: '/photos/anesk.jpeg' },
+  { cls: 'right-0 top-0 w-[160px]', rot: 6, cap: '', src: '/photos/sekolah.png' },
+  { cls: 'bottom-0 left-[70px] w-[170px]', rot: -2, cap: '', src: '/photos/2.png' },
 ];
+
+const closingPhoto = '/photos/3.png';
+
 
 function HeroScene({ ready, onExploreFavorites }) {
   const sceneRef = useRef(null);

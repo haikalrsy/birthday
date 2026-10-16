@@ -1,29 +1,18 @@
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import foto1 from '../../assets/images/2.png';
-import foto2 from '../../assets/images/3.png';
-import foto3 from '../../assets/images/4.png';
-import foto4 from '../../assets/images/anesk.jpeg';
-import foto5 from '../../assets/images/aneskabayi.jpeg';
-import foto6 from '../../assets/images/bunga.png';
-import foto7 from '../../assets/images/SECTIONAWAL.jpg';
-import foto8 from '../../assets/images/sekolah.png';
-import foto9 from '../../assets/images/5.png';
-import foto10 from '../../assets/images/6.png';
-
 const CONFIG = {
   items: [
-    { image: foto1, title: 'Judul 1' },
-    { image: foto2, title: 'Judul 2' },
-    { image: foto3, title: 'Judul 3', href: 'https://example.com' },
-    { image: foto4, title: 'Judul 4' },
-    { image: foto5, title: 'Judul 5' },
-    { image: foto6, title: 'Judul 6' },
-    { image: foto7, title: 'Judul 7' },
-    { image: foto8, title: 'Judul 8' },
-    { image: foto9, title: 'Judul 9' },
-    { image: foto10, title: 'Judul 10' }
+    { image: '/photos/2.png', title: 'Judul 1' },
+    { image: '/photos/3.png', title: 'Judul 2' },
+    { image: '/photos/4.png', title: 'Judul 3', href: 'https://example.com' },
+    { image: '/photos/anesk.jpeg', title: 'Judul 4' },
+    { image: '/photos/aneskabayi.jpeg', title: 'Judul 5' },
+    { image: '/photos/bunga.png', title: 'Judul 6' },
+    { image: '/photos/SECTIONAWAL.jpg', title: 'Judul 7' },
+    { image: '/photos/sekolah.png', title: 'Judul 8' },
+    { image: '/photos/5.png', title: 'Judul 9' },
+    { image: '/photos/6.png', title: 'Judul 10' }
   ],
 
   columns: 5,
@@ -307,7 +296,7 @@ const DriftWall = ({
         <img
           src={item.image}
           alt={item.title ?? ''}
-          loading="eager"
+          loading="lazy"
           decoding="async"
           draggable={false}
           className={imgClass}
