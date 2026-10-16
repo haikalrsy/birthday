@@ -51,7 +51,7 @@ export const BOOK_DATA = {
       photo: "/photos/8.jpeg",
       photoCaption: "Oh, Namanya Aneska.",
       pageImage: {
-    src: "https://substackcdn.com/image/fetch/$s_!zp8h!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F229988f4-4185-4e85-9cd4-025e26b73561_1080x791.jpeg",
+    src: "https://i.pinimg.com/736x/ff/59/fa/ff59fa5aaed2472b8ec44905460a00cc.jpg",
     caption: ".",
     at: "last",
   },
@@ -80,9 +80,9 @@ paragraphs: [
       place: "somewhere on the phone",
       date: "past our bedtime",
       photo: "/photos/callpertama.jpeg",
-      photoCaption: "low battery, zero intention of hanging up.",
+      photoCaption: "",
       pageImage: {
-    src: "https://substackcdn.com/image/fetch/$s_!kO7t!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbbfc0369-7ccb-4b0f-90fb-2efa512579d3_488x768.jpeg",
+    src: "https://substackcdn.com/image/fetch/$s_!PXWe!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd3970ddd-3b75-48f8-9a1c-992ce6b2193f_736x736.jpeg",
     caption: ".",
     at: "last",
   },
@@ -108,7 +108,7 @@ paragraphs: [
       photo: "/photos/anesk.jpeg",
       photoCaption: "just you. literally my favorite version.",
       pageImage: {
-    src: "https://substackcdn.com/image/fetch/$s_!yL4L!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F286d00b1-3a54-41f3-8552-086787d7d52d_736x920.jpeg",
+    src: "https://substackcdn.com/image/fetch/$s_!U0vh!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5bc4efa9-8339-4fab-a79b-34c0fd96804f_496x279.jpeg",
     caption: ".",
     at: "last",
   },
@@ -134,10 +134,15 @@ paragraphs: [
       tag: "04 · The moment i realize",
       title: "the moment made me realize that Aneska is someone who is too proud to show her true feelings..",
       subtitle: "",
-      place: "ragunan, jakarta",
+      place: "",
       date: "one for the camera roll",
       photo: "/photos/nyender.png",
       photoCaption: "proof that aneska hehe.",
+      pageImage: {
+    src: "https://substackcdn.com/image/fetch/$s_!wAzq!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7a6ca826-1cfd-4ae4-8c8a-d965c67e1a97_629x751.jpeg",
+    caption: ".",
+    at: "last",
+  },
       quote:
         "“the destination was ragunan. the actual highlight? take one guess.”",
      
@@ -164,6 +169,12 @@ paragraphs: [
   date: "a little list that will never be complete",
   photo: "/photos/bunga1.png",
   photoCaption: "tentang kamu, dari hal-hal kecil yang diam-diam selalu aku ingat.",
+  pageImage: {
+    src: "https://substackcdn.com/image/fetch/$s_!Apb4!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa246fa2b-4f28-4219-9721-8ae2821d160b_721x774.jpeg",
+    caption: ".",
+    at: "last",
+  },
+  
   quote:
     "“mungkin aku belum tau semuanya tentang kamu, tapi aku selalu punya alasan untuk ingin mengenalmu lebih jauh.”",
   paragraphs: [
@@ -223,6 +234,12 @@ paragraphs: [
       date: "not the last page",
       photo: "/photos/8.jpeg",
       photoCaption: "one of those moments i wanna keep.",
+      pageImage: {
+    src: "https://substackcdn.com/image/fetch/$s_!8x8Q!,w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe2528287-6047-4446-9507-55fd769a7d03_736x736.jpeg",
+    caption: ".",
+    at: "last",
+  },
+      
       quote:
         "“i can't promise i'll know what i'm doing all the time. but i know i wanna keep choosing you.”",
       paragraphs: [

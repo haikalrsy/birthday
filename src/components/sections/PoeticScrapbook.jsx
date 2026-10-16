@@ -38,12 +38,13 @@ const EASE = [0.645, 0.045, 0.355, 1];
 const F_BODY = "'Newsreader', 'EB Garamond', Georgia, serif";
 const F_DISPLAY = "'Instrument Serif', Georgia, serif";
 
+const PAPER_IMG = 'public/photos/bg.png';
 const PAPER = '#fdf6f2';
-const INK = '#4a3036';
+const INK = '#2e1a20'; // lebih gelap
 const SAGE = '#e3a3b4'; // pink muda (garis, bingkai, pembatas)
-const SAGE_DARK = '#9a4f65'; // rose tua (judul)
+const SAGE_DARK = '#7d3a4f'; // rose tua (judul), lebih gelap
 const ROSE = '#d17f95';
-const ROSE_DEEP = '#a8546b';
+const ROSE_DEEP = '#8f3d57'; // lebih gelap
 const LEAF = '#9db296'; // hijau cuma buat daun
 const LEAF_DARK = '#5f7559';
 const CLOTH = 'linear-gradient(145deg, #f6d0da 0%, #ecaebd 55%, #dc93a6 100%)';
@@ -54,10 +55,18 @@ const faceBase = {
   WebkitBackfaceVisibility: 'hidden',
 };
 
+const PAPER_VEIL = 0.81; // naik dari 0.79
+
 const paperTexture = {
-  background: PAPER,
-  backgroundImage:
-    'radial-gradient(circle at 15% 10%, rgba(255,255,255,0.8), transparent 55%), radial-gradient(circle at 90% 92%, rgba(232,169,186,0.18), transparent 55%), radial-gradient(circle at 8% 95%, rgba(246,211,219,0.3), transparent 50%)',
+  backgroundColor: PAPER,
+  backgroundImage: `
+    radial-gradient(circle at 15% 10%, rgba(255,255,255,0.45), transparent 85%),
+    linear-gradient(rgba(255,244,247,${PAPER_VEIL}), rgba(255,244,247,${PAPER_VEIL})),
+    url("${PAPER_IMG}")
+  `,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  backgroundRepeat: 'no-repeat',
 };
 
 function toRoman(num) {
@@ -430,7 +439,7 @@ function TextPage({ page, ch, side, no }) {
 
         <div
           lang="id"
-          className="no-scrollbar mt-4 flex min-h-0 flex-1 flex-col overflow-y-auto"
+          className="ps-scroll mt-4 flex min-h-0 flex-1 flex-col overflow-y-auto"
           style={{
             fontFamily: F_BODY,
             color: INK,
@@ -440,6 +449,8 @@ function TextPage({ page, ch, side, no }) {
             textAlignLast: 'left',
             hyphens: 'auto',
             WebkitHyphens: 'auto',
+            overscrollBehavior: 'contain',
+            touchAction: 'pan-y',
           }}
         >
           {page.chunk.map((c, i) => {
@@ -627,7 +638,7 @@ function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, on
           <button
             aria-label="Halaman berikutnya"
             onClick={onForward}
-            className="group absolute right-0 top-0 flex h-full w-14 cursor-pointer items-end justify-end pb-6 pr-2"
+            className="group absolute right-0 top-0 flex h-full w-8 cursor-pointer items-end justify-end pb-6 pr-1"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#b96a7d]/0 text-[#b96a7d]/0 transition-all group-hover:bg-[#b96a7d]/85 group-hover:text-[#faf6ee]">
               <ChevronRight className="h-4 w-4" />
@@ -650,7 +661,7 @@ function Leaf({ index, angle, z, front, back, isCover, onForward, onBackward, on
           <button
             aria-label="Halaman sebelumnya"
             onClick={onBackward}
-            className="group absolute left-0 top-0 flex h-full w-14 cursor-pointer items-end justify-start pb-6 pl-2"
+            className="group absolute left-0 top-0 flex h-full w-8 cursor-pointer items-end justify-start pb-6 pl-1"
           >
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#b96a7d]/0 text-[#b96a7d]/0 transition-all group-hover:bg-[#b96a7d]/85 group-hover:text-[#faf6ee]">
               <ChevronLeft className="h-4 w-4" />
@@ -680,6 +691,10 @@ const CSS = `
 .ps-spark { animation: ps-twinkle 2.8s ease-in-out infinite alternate; }
 @keyframes ps-float { from { transform: translateY(0) rotate(var(--r, 0deg)); } to { transform: translateY(-7px) rotate(var(--r, 0deg)); } }
 .ps-bow { animation: ps-float 4.2s ease-in-out infinite alternate; }
+.ps-scroll { scrollbar-width: thin; scrollbar-color: #e3a3b4 transparent; padding-right: 4px; }
+.ps-scroll::-webkit-scrollbar { width: 5px; }
+.ps-scroll::-webkit-scrollbar-track { background: transparent; }
+.ps-scroll::-webkit-scrollbar-thumb { background: #e3a3b4; border-radius: 999px; }
 @media (prefers-reduced-motion: reduce) { .ps-spark, .ps-bow { animation: none; } }
 @media (max-width: 640px) { .ps-spark, .ps-bow { display: none; } }
 `;
