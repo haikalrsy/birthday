@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 import Footer from './components/common/Footer';
 import StorySection from './components/sections/StorySection';
+import TearTicketGate from './components/gate/TearTicketGate';
 import './App.css';
 
 function App() {
@@ -28,13 +29,15 @@ function App() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#fffbfa] text-[#4a1525] selection:bg-[#ebe3d5] selection:text-[#580016]">
-      <main className="w-full flex-1">
-        <StorySection />
-      </main>
+    <TearTicketGate>
+      <div className="flex min-h-screen flex-col bg-[#fffbfa] text-[#4a1525] selection:bg-[#ebe3d5] selection:text-[#580016]">
+        <main className="w-full flex-1">
+          <StorySection />
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </TearTicketGate>
   );
 }
 

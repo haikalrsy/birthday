@@ -79,3 +79,39 @@ export function playChime() {
     });
   } catch {}
 }
+
+export function playTear() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const bufferSize = ctx.sampleRate * 0.22;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      // Noise burst with random micro-rips
+      const rip = Math.sin(i / 18) > 0.4 ? 1.4 : 0.6;
+      data[i] = (Math.random() * 2 - 1) * rip;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1400, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.2);
+    filter.Q.value = 1.8;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.25, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.22);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noise.start();
+    noise.stop(ctx.currentTime + 0.22);
+  } catch {}
+}
+
